@@ -1,0 +1,3 @@
+[submodule "lib/Adafruit_NeoMatrix"]
+	path = lib/Adafruit_NeoMatrix
+	url = https://github.com/adafruit/Adafruit_NeoMatrix.git
