@@ -15,7 +15,7 @@ void setup() {
 }
 
 void colorWipe(uint32_t c, uint8_t wait) {
-    for(uint16_t i=0; i < matrix.numPixels(); i++) {
+    for(uint16_t i = 0; i < matrix.numPixels(); i++) {
         matrix.setPixelColor(i, c);
         matrix.show();
         delay(wait);
