@@ -1,31 +1,54 @@
 #include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
+#include <FastLED.h>
 
-#define PIN 5                           // Pin on the ESP32 is connected to the NeoPixels
-#define NUMPIXELS 256                   // How many NeoPixels LEDs are attached to the ESP32
-#define BRIGHTNESS 20                   // We define brightness of NeoPixel LEDs
+// How many leds in your strip?
+#define NUM_LEDS 256
 
-// LED Matrix
-Adafruit_NeoPixel matrix = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+// For led chips like Neopixels, which have a data line, ground, and power, you just
+// need to define DATA_PIN.  For led chipsets that are SPI based (four wires - data, clock,
+// ground, and power), like the LPD8806, define both DATA_PIN and CLOCK_PIN
+#define DATA_PIN 14
+// #define CLOCK_PIN 13
 
-void setup() {
-    matrix.setBrightness(BRIGHTNESS);   // Set NeoPixel configuration 
-    matrix.begin();                     // Start NeoPixel library with all LEDs off
-    matrix.show();                      // Show settings of LEDs in NeoPixel array
+// Define the array of leds
+CRGB leds[NUM_LEDS];
+
+void setup() { 
+	Serial.begin(57600);
+	Serial.println("resetting");
+	LEDS.addLeds<WS2812B,DATA_PIN,RGB>(leds,NUM_LEDS);
+	LEDS.setBrightness(84);
 }
 
-void colorWipe(uint32_t c, uint8_t wait) {
-    for(uint16_t i = 0; i < matrix.numPixels(); i++) {
-        matrix.setPixelColor(i, c);
-        matrix.show();
-        delay(wait);
-    }
-}
+void fadeall() { for(int i = 0; i < NUM_LEDS; i++) { leds[i].nscale8(250); } }
 
-void loop() {
-    colorWipe(matrix.Color(255, 0, 0), 40);         // Red
-    colorWipe(matrix.Color(0, 255, 0), 40);         // Green
-    colorWipe(matrix.Color(0, 0, 255), 40);         // Blue
-    colorWipe(matrix.Color(255, 255, 255), 40);     // White
-    colorWipe(matrix.Color(0, 0, 0), 40);           // Black
+void loop() { 
+	static uint8_t hue = 0;
+	Serial.print("x");
+	// First slide the led in one direction
+	for(int i = 0; i < NUM_LEDS; i++) {
+		// Set the i'th led to red 
+		leds[i] = CHSV(hue++, 255, 255);
+		// Show the leds
+		FastLED.show(); 
+		// now that we've shown the leds, reset the i'th led to black
+		// leds[i] = CRGB::Black;
+		fadeall();
+		// Wait a little bit before we loop around and do it again
+		delay(10);
+	}
+	Serial.print("x");
+
+	// Now go in the other direction.  
+	for(int i = (NUM_LEDS)-1; i >= 0; i--) {
+		// Set the i'th led to red 
+		leds[i] = CHSV(hue++, 255, 255);
+		// Show the leds
+		FastLED.show();
+		// now that we've shown the leds, reset the i'th led to black
+		// leds[i] = CRGB::Black;
+		fadeall();
+		// Wait a little bit before we loop around and do it again
+		delay(10);
+	}
 }
