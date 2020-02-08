@@ -4,11 +4,12 @@
 
 CRGB panel[NUM_LEDS]; // Array of LEDs
 
-// Function Definitions
+// Function Declarations
 byte matrix2index(byte x, byte y);
 void setPixel(byte x, byte y, byte r, byte g, byte b);
 void setImage(byte image[16][16][3]);
 
+// Functions
 byte matrix2index(byte x, byte y) {
     if(y % 2 == 0) {
         return (MATRIX_WIDTH * y) + x;
