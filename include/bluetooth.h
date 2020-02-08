@@ -1,7 +1,4 @@
-#include <Arduino.h>
 #include <stdlib.h>
-#include <params.h>
-#include <tensors.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>

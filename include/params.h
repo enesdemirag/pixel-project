@@ -1,5 +1,4 @@
-
-/* ******************* LED Settings ******************* */
+/* ******************* LED Settings ****************** */
 #define DATA_PIN                    14                  // SPI interface pin
 #define DEFAULT_BRIGHTNESS_LEVEL    100                 // Default brightness level of the Panel
 #define CHIP_TYPE                   WS2812B             // Model of the chip inside the Panel

@@ -1,7 +1,4 @@
-#include <Arduino.h>
 #include <FastLED.h>
-#include <params.h>
-#include <tensors.h>
 
 CRGB panel[NUM_LEDS]; // Array of LEDs
 
@@ -14,6 +11,11 @@ void setImage(Image img);
 
 
 // Functions
+bool InitializeLEDPanel() {
+	LEDS.addLeds<CHIP_TYPE, DATA_PIN, RGB>(panel, NUM_LEDS);
+	LEDS.setBrightness(DEFAULT_BRIGHTNESS_LEVEL);
+}
+
 byte matrix2index(byte x, byte y) { // Serialize the matrix
     if(y % 2 == 0) {
         return (MATRIX_WIDTH * y) + x;

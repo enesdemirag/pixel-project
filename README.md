@@ -7,6 +7,10 @@ ESP32 Controlled LED Matrix
 
 ## Install
 
-> git clone https://github.com/enesdemirag/pixel-project.git
-
-> git submodule update --init --recursive
+```
+git clone https://github.com/enesdemirag/pixel-project.git
+cd pixel-project/
+git submodule update --init --recursive
+cd lib/FastLED
+git checkout fefc5f563a33963b9998f0475ad050813b30adcb
+> 
