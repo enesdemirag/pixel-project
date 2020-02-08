@@ -1,6 +1,3 @@
-#include <Arduino.h>
-#include <params.h>
-
 class Pixel {
     public:
         byte x;
@@ -20,5 +17,6 @@ class Image {
 class Animation {
     public:
         // Image *data;
+        byte len;
         Image data[];
 };

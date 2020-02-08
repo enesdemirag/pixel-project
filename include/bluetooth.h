@@ -1,44 +1,45 @@
 #include <stdlib.h>
+#include <params.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+#include <BLE2902.h>
 
-// Function Declarations
-bool InitializeBluetooth();
-Image getImage();
-Animation getAnimation();
+// Definitions
+BLECharacteristic *pCharacteristic;
+bool isConnected = false;
+bool isAnimation = false;
+bool isImage = false;
+std::string msg = "";
+std::string recv();
 
-// Functions
-bool InitializeBluetooth(std::string device_name) {
-    BLEDevice::init(device_name);
-    BLEServer *pServer = BLEDevice::createServer();
-    BLEService *pService = pServer->createService(SERVICE_UUID);
-    BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,
-                                         BLECharacteristic::PROPERTY_READ |
-                                         BLECharacteristic::PROPERTY_WRITE
-                                         );
+// Classes
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+        isConnected = true;
+    };
 
-    pCharacteristic->setValue("characteristic");
-    pService->start();
-    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID(SERVICE_UUID);
-    pAdvertising->setScanResponse(true);
-    // Functions that help with iPhone connections issue
-    pAdvertising->setMinPreferred(0x06);
-    pAdvertising->setMinPreferred(0x12);
-    BLEDevice::startAdvertising();
-    return true;
-}
+    void onDisconnect(BLEServer* pServer) {
+        isConnected = false;
+    };
+};
 
-Image getImage() {
-    // TODO: Implement bluetooth
-    Image dummy;
-    return dummy; 
-}
+class MyCallbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+        std::string rx_data = pCharacteristic->getValue();
+        // Message received !
+        msg = rx_data;
+        if(msg.find("animation") != -1) {
+            isImage = false;
+            isAnimation = true;
+        }
+        else if(msg.find("image") != -1) {
+            isAnimation = false;
+            isImage = true;
+        }
+    };
+};
 
-Animation getAnimation() {
-    // TODO: Implement bluetooth
-    Animation dummy;
-    return dummy;
+std::string recv() {
+    return msg;
 }
