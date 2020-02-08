@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include <params.h>
-#include <image.h>
+#include <tensors.h>
 #include <panel.h>
 #include <bluetooth.h>
 

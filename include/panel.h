@@ -1,16 +1,20 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include <params.h>
+#include <tensors.h>
 
 CRGB panel[NUM_LEDS]; // Array of LEDs
 
 // Function Declarations
 byte matrix2index(byte x, byte y);
-void setPixel(byte x, byte y, byte r, byte g, byte b);
-void setImage(byte image[16][16][3]);
+// void setPixel(byte x, byte y, byte r, byte g, byte b);
+// void setImage(byte image[16][16][3]);
+void setPixel(Pixel p);
+void setImage(Image img);
+
 
 // Functions
-byte matrix2index(byte x, byte y) {
+byte matrix2index(byte x, byte y) { // Serialize the matrix
     if(y % 2 == 0) {
         return (MATRIX_WIDTH * y) + x;
     }
@@ -18,6 +22,8 @@ byte matrix2index(byte x, byte y) {
         return (MATRIX_WIDTH * y) + (MATRIX_WIDTH - x);
     }
 }
+
+/* Functions using 3D byte array 
 
 void setPixel(byte x, byte y, byte r, byte g, byte b) {
     byte pixel = matrix2index(x, y);
@@ -32,12 +38,21 @@ void setImage(byte image[MATRIX_WIDTH][MATRIX_HEIGHT][3]) {
         }
     }
 }
+*/
 
-void setImage(Image image) {
+// Functions using custom Image class
+ 
+void setPixel(Pixel p) {
+    byte pixel = matrix2index(p.x, p.y);
+    panel[pixel].setRGB(p.r, p.g, p.b);
+    // panel[pixel].setRGB(p.color[0], p.color[1], p.color[1]);
+}
+
+void setImage(Image img) {
     for(byte x = 0; x < MATRIX_WIDTH; x++) {
         for(byte y = 0; y < MATRIX_HEIGHT; y++) {
             byte pixel = matrix2index(x, y);
-            panel[pixel].setRGB(image.data[x][y][0], image.data[x][y][1], image.data[x][y][2]);
+            panel[pixel].setRGB(img.data[x][y][0], img.data[x][y][1], img.data[x][y][2]);
         }
     }
 }
