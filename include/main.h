@@ -8,6 +8,8 @@
 bool InitializeBluetooth(std::string device_name);
 Image getImage();
 Animation getAnimation();
+void blink(byte r, byte g, byte b);
+
 // LED Panel Declarations
 bool InitializeLEDPanel();
 byte matrix2index(byte x, byte y);
@@ -45,13 +47,13 @@ bool InitializeBluetooth(std::string device_name) {
 }
 
 Image parseImg(std::string raw) {
-    Image dummy;
-    return dummy;
+    Image parsed_img;
+    return parsed_img;
 }
 
 Animation parseAni(std::string raw) {
-    Animation dummy;
-    return dummy;
+    Animation parsed_ani;
+    return parsed_ani;
 }
 
 bool InitializeLEDPanel() {
@@ -101,6 +103,14 @@ void setAnimation(Animation ani) {
                                     ani.data[frame].data[x][y][2]);
             }
         }
+        FastLED.show();
+        delay(DELAY_TIME);
+    }
+}
+
+void blink(byte r, byte g, byte b) {
+    for(byte i = 0; i < NUM_LEDS; i++) {
+        panel[i].setRGB(r, g, b);
         FastLED.show();
         delay(DELAY_TIME);
     }

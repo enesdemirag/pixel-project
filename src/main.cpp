@@ -13,16 +13,18 @@ void loop() {
         std::string msg = recv();
         if(msg != raw_data) {
             raw_data = msg;
-            for (int i = 0; i < raw_data.length(); i++) {
+            for (int i = 0; raw_data[i] != '\0'; i++) {
                 Serial.print(raw_data[i]);
             }
+            blink(255, 255, 255);
         }
     }
-    delay(DELAY_TIME * 100);
     // if(isImage) {
     //     setImage(parseImg(raw_data));
     // }
     // else if(isAnimation) {
     //     setAnimation(parseAni(raw_data));
     // }
+    setImage(parseImg(raw_data));
+    delay(DELAY_TIME * 100);
 }
