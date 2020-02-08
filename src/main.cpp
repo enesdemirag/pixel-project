@@ -8,6 +8,7 @@
 void setup() { 
 	LEDS.addLeds<CHIP_TYPE, DATA_PIN, RGB>(panel, NUM_LEDS);
 	LEDS.setBrightness(DEFAULT_BRIGHTNESS_LEVEL);
+	InitializeBluetooth("PixelProjectDemo");
 }
 
 void loop() { 
