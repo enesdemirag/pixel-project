@@ -1,15 +1,16 @@
 #include <Arduino.h>
 #include <params.h>
+#include <image.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
 // Function Declarations
-byte ***getImage();
+Image getImage();
 
 // Functions
-byte ***getImage() {
-    // TODO: Try to return fixed size 3D array
-    byte ***image = 0; 
-    return image;
+Image getImage() {
+    // TODO: Implement bluetooth
+    Image cols;
+    return cols; 
 }

@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <FastLED.h>
-#include <panel.h>
 #include <params.h>
+#include <image.h>
+#include <panel.h>
 #include <bluetooth.h>
 
 void setup() { 
@@ -10,7 +11,6 @@ void setup() {
 }
 
 void loop() { 
-	getImage();
-	setImage();
+	setImage(getImage());
 	LEDS.show(); 
 }
