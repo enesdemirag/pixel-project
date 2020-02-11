@@ -21,26 +21,49 @@ bool InitializeBluetooth(std::string device_name) {
     BLEDevice::init(device_name);
     // Create the BLE Server
     BLEServer *pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new MyServerCallbacks());
+    pServer->setCallbacks(new ServerCallbacks());
+    // pServer->setCallbacks(new MyServerCallbacks());
     // Create the BLE Service
     BLEService *pService = pServer->createService(SERVICE_UUID);
     // Create a BLE Characteristic
-    pCharacteristic = pService->createCharacteristic(
-                      CHARACTERISTIC_UUID_TX,
-                      BLECharacteristic::PROPERTY_NOTIFY
-                      );
+    characteristicTX = pService->createCharacteristic(
+                    CHARACTERISTIC_UUID_TX,
+                    BLECharacteristic::PROPERTY_NOTIFY
+                    );
+    characteristicTX->addDescriptor(new BLE2902());
+    BLECharacteristic *characteristic = pService->createCharacteristic(
+                                        CHARACTERISTIC_UUID_RX,
+                                        BLECharacteristic::PROPERTY_WRITE
+                                        );
+    characteristic->setCallbacks(new CharacteristicCallbacks());
+
+    // BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+    //                                    SERVICE_UUID,
+    //                                    BLECharacteristic::PROPERTY_READ |
+    //                                    BLECharacteristic::PROPERTY_WRITE
+    //                                  );
+    // // pCharacteristic = pService->createCharacteristic(
+    //                   CHARACTERISTIC_UUID_RX,
+    //                   BLECharacteristic::PROPERTY_READ
+    //                   );
                       
-    pCharacteristic->addDescriptor(new BLE2902());
+    // pCharacteristic->addDescriptor(new BLE2902());
 
-    BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID_RX,
-                                         BLECharacteristic::PROPERTY_WRITE
-                                         );
+    // BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+    //                                      CHARACTERISTIC_UUID_RX,
+    //                                      BLECharacteristic::PROPERTY_READ
+    //                                      );
 
-    pCharacteristic->setCallbacks(new MyCallbacks());
+    // pCharacteristic->setCallbacks(new MyCallbacks());
 
     // Start the service
     pService->start();
+    // BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+    // pAdvertising->addServiceUUID(SERVICE_UUID);
+    // pAdvertising->setScanResponse(true);
+    // pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
+    // pAdvertising->setMinPreferred(0x12);
+    // BLEDevice::startAdvertising();
     // Start advertising
     pServer->getAdvertising()->start();
     return true;
@@ -109,9 +132,82 @@ void setAnimation(Animation ani) {
 }
 
 void blink(byte r, byte g, byte b) {
-    for(byte i = 0; i < NUM_LEDS; i++) {
+    for(int i = 0; i < NUM_LEDS; i++) {
         panel[i].setRGB(r, g, b);
         FastLED.show();
         delay(DELAY_TIME);
     }
 }
+
+/* Crazy Part Begin */
+static uint16_t x = random16();
+static uint16_t y = random16();
+static uint16_t z = random16();
+uint16_t speed = 20;
+uint16_t scale = 311;
+uint8_t noise[16][16];
+
+uint16_t XY( uint8_t x, uint8_t y) {
+    uint16_t i;
+    if(y & 0x01) {
+        uint8_t reverseX = (16 - 1) - x;
+        i = (y * 16) + reverseX;
+    }
+    else {
+        i = (y * 16) + x;
+    }
+    return i;
+}
+
+void fillnoise8() {
+    for(int i = 0; i < 16; i++) {
+        int ioffset = 311 * i;
+        for(int j = 0; j < 16; j++) {
+        int joffset = 311 * j;
+        noise[i][j] = inoise8(x + ioffset,y + joffset,z);
+        }
+    }
+    z += speed;
+}
+
+void goCrazy() {
+    for(int i = 0; i < 1000; i++) {
+        static uint8_t ihue=0;
+        fillnoise8();
+        for(int i = 0; i < 16; i++) {
+            for(int j = 0; j < 16; j++) {
+                panel[XY(i,j)] = CHSV(noise[j][i],255,noise[i][j]);
+            }
+        }
+        ihue+=1;
+        LEDS.show();
+    }
+    LEDS.clear();
+}
+/* Crazy Part End */
+
+/* Fire Part Begin */
+void Fire() {
+    for(int i = 0; i < 1000; i++) {
+        static byte heat[NUM_LEDS];
+        for( int i = 0; i < NUM_LEDS; i++) {
+            heat[i] = qsub8( heat[i],  random8(0, ((55 * 10) / NUM_LEDS) + 2));
+        }
+        for( int k= NUM_LEDS - 1; k >= 2; k--) {
+            heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+        }
+        if( random8() < 120 ) {
+            int y = random8(7);
+            heat[y] = qadd8( heat[y], random8(160,255) );
+        }
+        for( int j = 0; j < NUM_LEDS; j++) {
+            CRGB color = HeatColor( heat[j]);
+            int pixelnumber;
+            pixelnumber = j;
+            panel[pixelnumber] = color;
+        }
+        FastLED.show();
+        FastLED.delay(DELAY_TIME);
+    }
+}
+/* Fire Part End */
