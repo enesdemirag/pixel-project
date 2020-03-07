@@ -5,7 +5,7 @@ std::string raw_data;
 void setup() {
     Serial.begin(115200);
 	InitializeLEDPanel();
-	InitializeBluetooth("Demo");
+	InitializeBluetooth("Pixel-Project");
 }
 
 void loop() {
